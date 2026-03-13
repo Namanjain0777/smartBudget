@@ -12,10 +12,37 @@ const app = express();
 connectDB();
 
 // Middleware
+const allowedOrigins = [
+  process.env.CLIENT_URL || "http://localhost:5500",
+  "https://smart-budget-khaki.vercel.app",
+  "https://smartbudget-jij8.onrender.com"
+];
+
 app.use(cors({
-  origin: true,  // Allow all origins + credentials
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS policy: Origin not allowed"));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
+
+// Explicitly handle preflight for all routes
+app.options("*", cors({
+  origin: allowedOrigins,
   credentials: true
 }));
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
+
 app.use(express.json({
   limit: '10mb'
 })); 
