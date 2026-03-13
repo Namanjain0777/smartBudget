@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const timeoutId = setTimeout(() => controller.abort(), 8000);
 
             try {
-                const res = await fetch("/api/auth/login", {
+                const res = await fetch(SmartBudgetAPI.getApiUrl("/api/auth/login"), {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
 
-                const res = await fetch("/api/auth/register", {
+                const res = await fetch(SmartBudgetAPI.getApiUrl("/api/auth/register"), {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
