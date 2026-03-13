@@ -1,0 +1,98 @@
+/* SmartBudget Theme System - Light/Dark Toggle */
+/* Add to login/register pages for smooth transitions */
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--glass-border);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(180deg);
+  box-shadow: var(--shadow-xl);
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Smooth transition for all theme changes */
+* {
+  transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Theme (default) */
+[data-theme="dark"] {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: rgba(22, 27, 34, 0.85);
+  --bg-card-hover: rgba(31, 41, 55, 0.95);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-hover: rgba(248, 250, 252, 0.95);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  
+  /* Adjust accents for light mode */
+  --accent-blue: #2563eb;
+  --accent-purple: #7c3aed;
+  --accent-green: #059669;
+  
+  /* Light shadows */
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* Theme body override */
+body {
+  background: var(--bg-primary) !important;
+}
+
+/* Orbs adapt to theme */
+[data-theme="light"] .bg-orb-1 { background: #60a5fa; }
+[data-theme="light"] .bg-orb-2 { background: #a78bfa; }
+[data-theme="light"] .bg-orb-3 { background: #4ade80; }
+
+[data-theme="dark"] .bg-orb-1 { background: var(--accent-blue); }
+[data-theme="dark"] .bg-orb-2 { background: var(--accent-purple); }
+[data-theme="dark"] .bg-orb-3 { background: var(--accent-green); }
+
+/* Theme transition helpers */
+.theme-transition {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+

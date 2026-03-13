@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBudget – Stock Predictor</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Premium Styles -->
+    <link rel="stylesheet" href="css/premium.css">
+
+    <link rel="stylesheet" href="css/stock-predictor.css">
+    <style>
+        /* SmartBudget Premium Navbar - Identical for all pages */
+        /* NAVBAR */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 14, 23, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* CONTAINER */
+        .nav-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            height: 70px;
+        }
+
+        /* LEFT */
+        .nav-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        /* CENTER MENU */
+        .nav-center {
+            display: flex;
+            gap: 32px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            padding: 8px 0;
+            transition: .3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: .3s;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* RIGHT */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        #userNameNav {
+            font-weight: 600;
+            color: #8b5cf6;
+        }
+
+        /* LOGOUT BUTTON */
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:768px) {
+
+            .nav-center {
+                display: none;
+            }
+
+            .nav-container {
+                padding: 0 20px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Identical Premium Navbar for all pages -->
+    <header class="navbar premium-navbar">
+        <div class="nav-container">
+
+            <!-- LEFT -->
+            <div class="nav-left">
+                <h2 class="logo text-gradient">SmartBudget</h2>
+                <span class="tagline">Personal Finance Intelligence</span>
+            </div>
+
+            <!-- CENTER -->
+            <nav class="nav-center">
+                <a href="dashboard.html" class="nav-link" data-page="dashboard">Dashboard</a>
+                <a href="goal-planner.html" class="nav-link" data-page="goal-planner">Wealth Planner</a>
+                <a href="ai-advisor.html" class="nav-link" data-page="ai-advisor">AI Advisor</a>
+                <a href="stock-predictor.html" class="nav-link active" data-page="stock-predictor">Stock Predictor</a>
+                <a href="credit-card-advisor.html" class="nav-link" data-page="credit-card">Credit Cards</a>
+                <a href="contact.html" class="nav-link" data-page="contact">Contact</a>
+            </nav>
+
+            <!-- RIGHT -->
+            <div class="nav-right">
+                <strong id="userNameNav" class="text-gradient">User</strong>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="stock-container">
+
+        <h1 class="page-title animate-fade-in-up">📈 Stock Analysis & Predictor</h1>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <span class="stat-label">Market Status</span>
+                <span class="stat-value" id="marketStatus">Open</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">NIFTY 50</span>
+                <span class="stat-value" id="niftyValue">22,450</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">SENSEX</span>
+                <span class="stat-value" id="sensexValue">74,500</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Data Source</span>
+                <span class="stat-value" id="dataSource" style="color: var(--accent-blue);">Alpha Vantage</span>
+            </div>
+        </div>
+
+        <!-- Data Source Notification -->
+        <div class="yahoo-notification" id="yahooNotification" style="display: none;">
+            ⚠️ <strong>Alpha Vantage API limit reached.</strong> Now using Yahoo Finance for data. Some features may be
+            limited.
+        </div>
+
+        <!-- API Key & Stock Search Section -->
+        <div class="search-section premium-card glass-card-hover animate-fade-in-up">
+            <div class="search-container">
+                <!-- API Key Input -->
+                <div class="api-key-section" id="apiKeySection">
+                    <div class="input-group">
+                        <label>🔑 Alpha Vantage API Key <span class="api-hint">(Optional - improves
+                                accuracy)</span></label>
+                        <div class="input-with-button">
+                            <input type="password" id="apiKeyInput" class="input-premium"
+                                placeholder="Enter your API key or leave blank">
+                            <button class="btn-premium btn-secondary" onclick="toggleApiKey()">👁</button>
+                            <button class="btn-premium btn-primary" onclick="saveApiKey()">Save</button>
+                        </div>
+                        <p class="api-note-small">Get free key: <a href="https://www.alphavantage.co/support/#api-key"
+                                target="_blank">Alpha Vantage</a></p>
+                    </div>
+                </div>
+
+                <!-- Stock Search -->
+                <div class="search-input-group">
+                    <label>🔍 Search Stock Symbol</label>
+                    <div class="search-box">
+                        <input type="text" id="stockSearch" class="input-premium"
+                            placeholder="Enter stock name or symbol (e.g., RELIANCE, TCS, AAPL)">
+                        <button class="btn-premium btn-primary search-btn" onclick="searchStock()">
+                            Search
+                        </button>
+                    </div>
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </div>
+                <p class="api-note">💡 Supports Indian stocks (RELIANCE, TCS, HDFCBANK, INFY) and US stocks (AAPL,
+                    GOOGL, MSFT)</p>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Analyzing stock data...</p>
+        </div>
+
+        <!-- Error/Info Message -->
+        <div class="message-box" id="messageBox"></div>
+
+        <div class="stock-grid" id="stockGrid" style="display: none;">
+
+            <!-- LEFT PANEL - INPUT & FUNDAMENTAL -->
+            <div class="left-panel">
+
+                <!-- Stock Quote Card -->
+                <div class="premium-card glass-card-hover animate-fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="stock-header">
+                        <h3>📊 Stock Quote</h3>
+                        <div class="ai-status">
+                            <span class="ai-dot"></span>
+                            Live Data
+                        </div>
+                    </div>
+
+                    <div class="quote-display">
+                        <div class="stock-symbol-large">
+                            <span id="displaySymbol">RELIANCE</span>
+                            <span class="stock-name" id="displayName">Reliance Industries Ltd</span>
+                        </div>
+                        <div class="stock-price-large">
+                            <span class="price" id="currentPrice">₹0</span>
+                            <span class="change" id="priceChange">+0%</span>
+                        </div>
+                    </div>
+
+                    <div class="quote-details">
+                        <div class="quote-item">
+                            <span class="quote-label">Open</span>
+                            <span class="quote-value" id="quoteOpen">₹0</span>
+                        </div>
+                        <div class="quote-item">
+                            <span class="quote-label">High</span>
+                            <span class="quote-value" id="quoteHigh">₹0</span>
+                        </div>
+                        <div class="quote-item">
+                            <span class="quote-label">Low</span>
+                            <span class="quote-value" id="quoteLow">₹0</span>
+                        </div>
+                        <div class="quote-item">
+                            <span class="quote-label">Volume</span>
+                            <span class="quote-value" id="quoteVolume">0</span>
+                        </div>
+                        <div class="quote-item">
+                            <span class="quote-label">Prev Close</span>
+                            <span class="quote-value" id="quotePrevClose">₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fundamental Analysis -->
+                <div class="premium-card glass-card-hover animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <h3>📈 Fundamental Analysis</h3>
+
+                    <div class="fundamental-grid" id="fundamentalSection">
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">Market Cap</span>
+                            <span class="fundamental-value" id="fundamentalMarketCap">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">P/E Ratio</span>
+                            <span class="fundamental-value" id="fundamentalPE">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">EPS</span>
+                            <span class="fundamental-value" id="fundamentalEPS">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">Dividend Yield</span>
+                            <span class="fundamental-value" id="fundamentalDividend">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">52W High</span>
+                            <span class="fundamental-value" id="fundamental52High">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">52W Low</span>
+                            <span class="fundamental-value" id="fundamental52Low">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">Book Value</span>
+                            <span class="fundamental-value" id="fundamentalBook">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">P/B Ratio</span>
+                            <span class="fundamental-value" id="fundamentalPB">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">Profit Margin</span>
+                            <span class="fundamental-value" id="fundamentalProfitMargin">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">ROE</span>
+                            <span class="fundamental-value" id="fundamentalROE">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">Beta</span>
+                            <span class="fundamental-value" id="fundamentalBeta">-</span>
+                        </div>
+                        <div class="fundamental-item">
+                            <span class="fundamental-label">Sector</span>
+                            <span class="fundamental-value" id="fundamentalSector">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Input for Prediction -->
+                <div class="premium-card glass-card-hover animate-fade-in-up" style="animation-delay: 0.3s;">
+                    <h3>🎯 Manual Prediction Settings</h3>
+
+                    <div class="input-group">
+                        <label>Expected Growth Rate (%)</label>
+                        <input type="number" id="growthRate" class="input-premium" placeholder="Annual growth rate"
+                            value="12">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Volatility (Risk)</label>
+                        <select id="volatility" class="input-premium">
+                            <option value="low">Low (Blue Chip)</option>
+                            <option value="medium" selected>Medium (Mid Cap)</option>
+                            <option value="high">High (Small Cap)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Investment Period</label>
+                        <select id="investmentPeriod" class="input-premium">
+                            <option value="1">1 Year</option>
+                            <option value="3">3 Years</option>
+                            <option value="5" selected>5 Years</option>
+                            <option value="10">10 Years</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Monthly Investment (SIP) (₹)</label>
+                        <input type="number" id="monthlySIP" class="input-premium" placeholder="Monthly amount"
+                            value="5000">
+                    </div>
+
+                    <button class="btn-premium btn-primary" onclick="calculatePrediction()">
+                        🔮 Calculate Prediction
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL - RECOMMENDATION & CHARTS -->
+            <div class="right-panel">
+
+                <!-- Buy/Sell Recommendation -->
+                <div class="premium-card glass-card-hover animate-fade-in-up recommendation-card"
+                    style="animation-delay: 0.15s;">
+                    <h3>🎯 AI Recommendation</h3>
+
+                    <div class="recommendation-display">
+                        <div class="recommendation-percentage" id="recommendationPercent">
+                            <span class="percent-value">--</span>
+                            <span class="percent-label">Score</span>
+                        </div>
+                        <div class="recommendation-verdict" id="recommendationVerdict">
+                            <span class="verdict-text">Search for a stock</span>
+                        </div>
+                    </div>
+
+                    <div class="recommendation-factors">
+                        <h4>Analysis Factors</h4>
+                        <div class="factor-item">
+                            <span class="factor-name">RSI Indicator</span>
+                            <span class="factor-value" id="factorRSI">--</span>
+                        </div>
+                        <div class="factor-item">
+                            <span class="factor-name">P/E Ratio Analysis</span>
+                            <span class="factor-value" id="factorPE">--</span>
+                        </div>
+                        <div class="factor-item">
+                            <span class="factor-name">Price vs SMA(50)</span>
+                            <span class="factor-value" id="factorSMA">--</span>
+                        </div>
+                        <div class="factor-item">
+                            <span class="factor-name">MACD Signal</span>
+                            <span class="factor-value" id="factorMACD">--</span>
+                        </div>
+                        <div class="factor-item">
+                            <span class="factor-name">Volume Trend</span>
+                            <span class="factor-value" id="factorVolume">--</span>
+                        </div>
+                    </div>
+
+                    <div class="recommendation-summary" id="recommendationSummary">
+                        <p>Enter a stock symbol above to get AI-powered buy/sell recommendation based on fundamental and
+                            technical analysis.</p>
+                    </div>
+                </div>
+
+                <!-- Technical Indicators -->
+                <div class="premium-card glass-card-hover animate-fade-in-up" style="animation-delay: 0.25s;">
+                    <h4>📊 Technical Indicators</h4>
+                    <div class="indicators-grid" id="technicalIndicators">
+                        <div class="indicator-card">
+                            <span class="indicator-name">RSI (14)</span>
+                            <span class="indicator-value" id="rsiValue">--</span>
+                            <span class="indicator-signal" id="rsiSignal">--</span>
+                        </div>
+                        <div class="indicator-card">
+                            <span class="indicator-name">MACD</span>
+                            <span class="indicator-value" id="macdValue">--</span>
+                            <span class="indicator-signal" id="macdSignal">--</span>
+                        </div>
+                        <div class="indicator-card">
+                            <span class="indicator-name">SMA 20</span>
+                            <span class="indicator-value" id="sma20Value">--</span>
+                            <span class="indicator-signal" id="sma20Signal">--</span>
+                        </div>
+                        <div class="indicator-card">
+                            <span class="indicator-name">SMA 50</span>
+                            <span class="indicator-value" id="sma50Value">--</span>
+                            <span class="indicator-signal" id="sma50Signal">--</span>
+                        </div>
+                        <div class="indicator-card">
+                            <span class="indicator-name">Bollinger Upper</span>
+                            <span class="indicator-value" id="bbUpper">--</span>
+                            <span class="indicator-signal">Band</span>
+                        </div>
+                        <div class="indicator-card">
+                            <span class="indicator-name">Bollinger Lower</span>
+                            <span class="indicator-value" id="bbLower">--</span>
+                            <span class="indicator-signal">Band</span>
+                        </div>
+                        <div class="indicator-card">
+                            <span class="indicator-name">Support</span>
+                            <span class="indicator-value" id="supportLevel">--</span>
+                            <span class="indicator-signal">S1</span>
+                        </div>
+                        <div class="indicator-card">
+                            <span class="indicator-name">Resistance</span>
+                            <span class="indicator-value" id="resistanceLevel">--</span>
+                            <span class="indicator-signal">R1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Chart -->
+                <div class="premium-card glass-card-hover animate-fade-in-up" style="animation-delay: 0.3s;">
+                    <h4>📈 Price History (100 Days)</h4>
+                    <div class="chart-wrapper" style="height: 300px;">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Volume Chart -->
+                <div class="premium-card glass-card-hover animate-fade-in-up" style="animation-delay: 0.35s;">
+                    <h4>📊 Trading Volume</h4>
+                    <div class="chart-wrapper" style="height: 150px;">
+                        <canvas id="volumeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Prediction Charts -->
+                <div class="premium-card glass-card-hover animate-fade-in-up" style="animation-delay: 0.4s;">
+                    <h4>🔮 Price Prediction & Scenario Analysis</h4>
+
+                    <div class="prediction-summary">
+                        <div class="summary-item">
+                            <span class="summary-label">Current Value</span>
+                            <span class="summary-value" id="summaryCurrent">₹0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Projected Value</span>
+                            <span class="summary-value highlight" id="summaryProjected">₹0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Expected Returns</span>
+                            <span class="summary-value success" id="summaryReturns">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <h4>Price Projection</h4>
+                            <div class="chart-wrapper" style="height: 180px;">
+                                <canvas id="projectionChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-box">
+                            <h4>SIP Growth</h4>
+                            <div class="chart-wrapper" style="height: 180px;">
+                                <canvas id="sipChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-box full-width">
+                            <h4>Scenario Analysis (Bull / Normal / Bear)</h4>
+                            <div class="chart-wrapper" style="height: 200px;">
+                                <canvas id="scenarioChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Assessment -->
+                <div class="premium-card glass-card-hover animate-fade-in-up" style="animation-delay: 0.45s;">
+                    <h4>⚠️ Risk Assessment</h4>
+                    <div class="risk-bars">
+                        <div class="risk-item">
+                            <span>Market Risk</span>
+                            <div class="risk-bar">
+                                <div class="risk-fill" id="marketRiskFill" style="width: 50%"></div>
+                            </div>
+                            <span id="marketRiskValue">Medium</span>
+                        </div>
+                        <div class="risk-item">
+                            <span>Volatility Risk</span>
+                            <div class="risk-bar">
+                                <div class="risk-fill" id="volRiskFill" style="width: 50%"></div>
+                            </div>
+                            <span id="volRiskValue">Medium</span>
+                        </div>
+                        <div class="risk-item">
+                            <span>Liquidity Risk</span>
+                            <div class="risk-bar">
+                                <div class="risk-fill" id="liqRiskFill" style="width: 20%"></div>
+                            </div>
+                            <span id="liqRiskValue">Low</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Floating Quick Actions -->
+    <div class="floating-actions">
+        <button class="btn-premium btn-primary" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+            ↑ Top
+        </button>
+    </div>
+
+    <!-- Navbar JS -->
+    <script>
+        // Username from localStorage
+        const userNameNav = document.getElementById('userNameNav');
+        if (userNameNav) {
+            const name = localStorage.getItem('userName') || 'User';
+            userNameNav.textContent = name;
+        }
+
+        // Logout
+        window.logout = function () {
+            if (confirm('Logout?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        };
+    </script>
+
+    <!-- Page Scripts -->
+    <script src="js/stock-predictor.js"></script>
+
+</body>
+
+</html>

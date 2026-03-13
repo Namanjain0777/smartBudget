@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SmartBudget</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="css/premium.css">
+  <link rel="stylesheet" href="css/stock-predictor.css">
+
+  <style>
+    /* RESET */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(10, 14, 23, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* CONTAINER */
+    .nav-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 70px;
+    }
+
+    /* LEFT */
+    .nav-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tagline {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    /* CENTER MENU */
+    .nav-center {
+      display: flex;
+      gap: 32px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: #9ca3af;
+      font-size: 14px;
+      font-weight: 500;
+      position: relative;
+      padding: 8px 0;
+      transition: .3s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: white;
+    }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      transition: .3s;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    /* RIGHT */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #userNameNav {
+      font-weight: 600;
+      color: #8b5cf6;
+    }
+
+    /* LOGOUT BUTTON */
+    .logout-btn {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: .3s;
+    }
+
+    .logout-btn:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:768px) {
+
+      .nav-center {
+        display: none;
+      }
+
+      .nav-container {
+        padding: 0 20px;
+      }
+
+    }
+
+    /* PAGE UI */
+
+    .container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+
+      background: radial-gradient(circle at center, #0f172a 0%, #020617 80%);
+    }
+
+    .title {
+      font-size: clamp(40px, 6vw, 70px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+
+    .badge {
+      padding: 10px 22px;
+      border-radius: 50px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      font-weight: 500;
+    }
+
+    /* CARD */
+
+    .card-container {
+      perspective: 1400px;
+      margin-top: 40px;
+    }
+
+    .card {
+      width: 420px;
+      height: 260px;
+
+      border-radius: 20px;
+
+      background: linear-gradient(135deg, #1e293b, #020617);
+
+      border: 1px solid rgba(139, 92, 246, 0.4);
+
+      box-shadow:
+        0 40px 80px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(139, 92, 246, 0.2);
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      transform-style: preserve-3d;
+      transition: transform .15s ease;
+
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+
+      background: linear-gradient(120deg,
+          transparent,
+          rgba(255, 255, 255, 0.08),
+          transparent);
+
+      transform: rotate(25deg);
+      animation: shine 6s linear infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        transform: translateX(-100%) rotate(25deg);
+      }
+
+      100% {
+        transform: translateX(100%) rotate(25deg);
+      }
+    }
+
+    .card h2 {
+      font-size: 42px;
+      letter-spacing: 4px;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+    }
+
+    .card span {
+      margin-top: 10px;
+      color: #8b5cf6;
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 25px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="navbar premium-navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <h2 class="logo text-gradient">SmartBudget</h2>
+        <span class="tagline">Personal Finance Intelligence</span>
+      </div>
+
+      <nav class="nav-center">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard">Dashboard</a>
+        <a href="goal-planner.html" class="nav-link" data-page="goal-planner">Wealth Planner</a>
+        <a href="ai-advisor.html" class="nav-link" data-page="ai-advisor">AI Advisor</a>
+        <a href="stock-predictor.html" class="nav-link" data-page="stock-predictor">Stock Predictor</a>
+        <a href="credit-card-advisor.html" class="nav-link active" data-page="credit-card">Credit Cards</a>
+        <a href="contact.html" class="nav-link" data-page="contact">Contact</a>
+      </nav>
+
+      <div class="nav-right">
+        <strong id="userNameNav" class="text-gradient">User</strong>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <h1 class="title">Credit Card Advisor</h1>
+
+    <div class="badge">🚀 Coming Soon</div>
+
+    <div class="card-container">
+
+      <div class="card" id="card">
+
+        <h2>NAMAN</h2>
+        <span>SMARTBUDGET PREMIUM</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Built by Naman Jain
+  </div>
+
+  <script>
+
+    /* 3D CARD CURSOR EFFECT */
+
+    const card = document.getElementById("card");
+
+    document.addEventListener("mousemove", (e) => {
+
+      const rect = card.getBoundingClientRect();
+
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = -(y - centerY) / 12;
+      const rotateY = (x - centerX) / 12;
+
+      card.style.transform =
+        `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
+
+    });
+
+    document.addEventListener("mouseleave", () => {
+      card.style.transform = "rotateX(0deg) rotateY(0deg)";
+    });
+
+  </script>
+
+  <script>
+    const userNameNav = document.getElementById('userNameNav');
+
+    if (userNameNav) {
+      const name = localStorage.getItem('userName') || 'User';
+      userNameNav.textContent = name;
+    }
+
+    window.logout = function () {
+      if (confirm('Logout?')) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+      }
+    };
+  </script>
+
+</body>
+
+</html>

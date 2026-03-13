@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBudget - Login</title>
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-theme="dark">
+    <!-- Background Orbs -->
+    <div class="auth-bg">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌙</button>
+
+    <!-- Auth Container -->
+    <div class="auth-page">
+        <div class="auth-container animate-fade-in-up">
+            
+            <!-- Header -->
+            <div class="auth-header">
+                <div class="logo">💰 SmartBudget</div>
+                <div class="tagline">Your AI-powered financial advisor</div>
+            </div>
+
+            <!-- Auth Card -->
+            <div class="auth-card animate-fade-in-up" style="animation-delay: 0.1s;">
+                <h2>Welcome Back</h2>
+                <p class="auth-subtitle">Sign in to your account to continue</p>
+
+                <!-- Login Form -->
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="password-wrapper">
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="Enter your email"
+                                class="input-premium"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-wrapper">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Enter your password"
+                                class="input-premium"
+                                required
+                                minlength="6"
+                            >
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-btn">
+                        Sign In
+                    </button>
+                </form>
+
+                <!-- Register Link -->
+                <div class="register-link">
+                    Don't have an account? <a href="register.html">Create one here</a>
+                </div>
+            </div>
+
+            <!-- Auth Footer -->
+            <div class="auth-footer">
+                &copy; 2024 SmartBudget. All rights reserved.
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth JS -->
+    <script src="js/auth.js"></script>
+    
+    <!-- Theme Toggle Script -->
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            themeToggle.innerHTML = newTheme === 'dark' ? '☀️' : '🌙';
+            themeToggle.title = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        themeToggle.innerHTML = savedTheme === 'dark' ? '☀️' : '🌙';
+    </script>
+
+    <style>
+        /* Ensure input styling matches premium CSS */
+        .input-premium {
+            width: 100%;
+            padding: 16px 16px;
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .input-premium:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .input-premium::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Radius vars for compatibility */
+        :root {
+            --radius-md: 12px;
+            --radius-xl: 24px;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+        }
+    </style>
+</body>
+</html>

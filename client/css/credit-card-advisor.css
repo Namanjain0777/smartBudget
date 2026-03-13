@@ -1,0 +1,115 @@
+/* =========================================
+   SMARTBUDGET CREDIT CARD ADVISOR - PREMIUM EDITION
+   Modern Dark Theme with 3D Card Effects
+========================================== */
+
+/* ================= GLOBAL RESET ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ================= BODY ================= */
+body {
+    background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 40%, #0f0f23 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;  /* Changed from height:100vh */
+    overflow-x: hidden; /* Changed from overflow:hidden */
+}
+
+/* ================= MAIN SECTION ================= */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 100px; /* Space for fixed navbar */
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.title {
+    font-size: clamp(40px, 6vw, 70px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #00ff88, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.badge {
+    padding: 10px 20px;
+    border-radius: 50px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    color: #00ff88;
+    font-weight: 500;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* ================= CARD CONTAINER ================= */
+.card-container {
+    margin-top: 40px;
+    perspective: 1200px;
+}
+
+.card {
+    width: 420px;
+    height: 260px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #2d1b69, #0f0a32);
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease;
+    transform-style: preserve-3d;
+    max-width: 90vw;
+}
+
+.card h2 {
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+}
+
+.card span {
+    margin-top: 10px;
+    color: #00ff88;
+    opacity: 0.8;
+}
+
+/* ================= FOOTER ================= */
+.footer {
+    position: relative; /* Changed from absolute */
+    bottom: auto;      /* Changed from absolute positioning */
+    margin-top: 40px;
+    font-size: 14px;
+    opacity: 0.6;
+    text-align: center;
+    padding: 20px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+    .container { padding-top: 90px; padding: 0 15px; }
+    .card { width: 90vw; height: 200px; }
+    .card h2 { font-size: 28px; }
+}
