@@ -13,12 +13,12 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: ['https://smart-budget-khaki.vercel.app', 'http://localhost:3000'],
+  origin: true,  // Allow all origins + credentials
   credentials: true
 }));
 app.use(express.json({
   limit: '10mb'
-}));
+})); 
 
 // Serve frontend from client folder
 app.use(express.static(path.join(__dirname, "../client")));
