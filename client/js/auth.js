@@ -85,7 +85,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // AbortController with 8s timeout
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            const timeoutId = setTimeout(() => {
+                controller.abort(new DOMException('Request timed out after 8 seconds', 'AbortError'));
+            }, 8000);
 
             try {
                 const res = await fetch(SmartBudgetAPI.getApiUrl("/api/auth/login"), {
@@ -131,10 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 clearTimeout(timeoutId);
-                console.error(error);
                 if (error.name === 'AbortError') {
+                    console.warn('Fetch aborted:', error.message || 'timeout');
                     showNotification("Request timed out (8s). Check your internet connection and try again.", 'error');
                 } else {
+                    console.error(error);
                     showNotification("Network error. Please check your connection.", 'error');
                 }
                 submitBtn.textContent = originalText;
@@ -188,7 +191,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // AbortController with 8s timeout
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            const timeoutId = setTimeout(() => {
+                controller.abort(new DOMException('Request timed out after 8 seconds', 'AbortError'));
+            }, 8000);
 
             try {
 
@@ -231,10 +236,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 clearTimeout(timeoutId);
-                console.error(error);
                 if (error.name === 'AbortError') {
+                    console.warn('Fetch aborted:', error.message || 'timeout');
                     showNotification("Request timed out (8s). Check your internet connection and try again.", 'error');
                 } else {
+                    console.error(error);
                     showNotification("Network error. Please check your connection.", 'error');
                 }
                 submitBtn.textContent = originalText;
@@ -244,5 +250,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-});
+} );
 
