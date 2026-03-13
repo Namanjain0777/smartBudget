@@ -1,3 +1,4 @@
+const fetch = require("node-fetch");
 const express = require('express');
 const router = express.Router();
 
@@ -336,7 +337,7 @@ router.get('/overview/:symbol', async (req, res) => {
                     date: date,
                     open: parseFloat(timeSeries[date]['1. open']),
                     high: parseFloat(timeSeries[date]['2. high']),
-                    low: parseFloat(timeSeries['3. low']),
+                    low: parseFloat(timeSeries[date]['3. low']),
                     close: parseFloat(timeSeries[date]['4. close']),
                     volume: parseInt(timeSeries[date]['5. volume'])
                 }));
