@@ -189,6 +189,18 @@ document.addEventListener("DOMContentLoaded", () => {
             submitBtn.textContent = 'Creating account...';
             submitBtn.disabled = true;
 
+            // Build URL and validate immediate config mistakes (bad host characters from stale deploy/client cache)
+            const endpoint = "/api/auth/register";
+            const apiUrl = SmartBudgetAPI.getApiUrl(endpoint);
+            console.log('Registration endpoint used:', apiUrl);
+            if (!apiUrl.includes('smartbudget-jij8.onrender.com')) {
+                console.error('Invalid API URL:', apiUrl);
+                showNotification('Configuration error: invalid API URL. Clear cache and redeploy.', 'error');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+
             // AbortController with 8s timeout
             const controller = new AbortController();
             const timeoutId = setTimeout(() => {
@@ -197,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
 
-                const res = await fetch(SmartBudgetAPI.getApiUrl("/api/auth/register"), {
+                const res = await fetch(apiUrl, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
