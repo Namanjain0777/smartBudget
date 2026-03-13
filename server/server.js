@@ -11,43 +11,36 @@ const app = express();
 // Connect Database
 connectDB();
 
-// Middleware
+// Allowed origins (frontend + local)
 const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:5500",
-  "https://smart-budget-khaki.vercel.app",
-  "https://smartbudget-jij8.onrender.com"
+  "http://localhost:5500",
+  "http://localhost:3000",
+  "https://smart-budget-khaki.vercel.app"
 ];
 
+// CORS configuration
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+  origin: function (origin, callback) {
+    // allow requests with no origin (mobile apps, Postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     } else {
-      callback(new Error("CORS policy: Origin not allowed"));
+      return callback(new Error("CORS not allowed"));
     }
   },
-  credentials: true,
-  optionsSuccessStatus: 204
-}));
-
-// Explicitly handle preflight for all routes
-app.options("*", cors({
-  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  next();
-});
+// Handle preflight requests
+app.options("*", cors());
 
-app.use(express.json({
-  limit: '10mb'
-})); 
+// JSON middleware
+app.use(express.json({ limit: "10mb" }));
 
-// Serve frontend from client folder
+// Serve frontend if needed
 app.use(express.static(path.join(__dirname, "../client")));
 
 // API Routes
@@ -55,7 +48,12 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/finance", require("./routes/financeRoutes"));
 app.use("/api/stock", require("./routes/stockRoutes"));
 
-// Catch all route (important for SPA routing later)
+// Health check route
+app.get("/", (req, res) => {
+  res.send("SmartBudget API running 🚀");
+});
+
+// 404 handler
 app.use((req, res) => {
   res.status(404).send("Route not found");
 });
