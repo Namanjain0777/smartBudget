@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => {
                 controller.abort(new DOMException('Request timed out after 8 seconds', 'AbortError'));
-            }, 8000);
+            }, 30000);
 
             try {
 
