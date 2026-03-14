@@ -45,7 +45,16 @@ app.options("*", cors());
 app.use(express.json({ limit: "10mb" }));
 
 // Serve frontend (optional)
-app.use(express.static(path.join(__dirname, "../client")));
+// Serve frontend static files
+const clientPath = path.join(__dirname, "../client");
+
+app.use(express.static(clientPath));
+
+// Explicit static folders
+app.use("/css", express.static(path.join(clientPath, "css")));
+app.use("/js", express.static(path.join(clientPath, "js")));
+app.use("/images", express.static(path.join(clientPath, "images")));
+
 
 // API Routes
 app.use("/api/auth", require("./routes/auth"));
