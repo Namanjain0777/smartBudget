@@ -37,19 +37,38 @@ class FinanceState {
   }
 
   handleCalculation(data) {
+    // Cumulative updates for all calculators
     switch (data.type) {
       case 'sip':
-        this.state.sipMonthly = data.monthlySIP;
-        this.state.projectedWealth = data.projected;
+      case 'compound':
+      case 'retirement':
+        // Update monthly investment and projected wealth
+        this.state.sipMonthly = Math.max(this.state.sipMonthly, data.monthlySIP || data.sip || 0);
+        this.state.projectedWealth = Math.max(this.state.projectedWealth, data.projected || data.target || 0);
         break;
       case 'goal':
-        this.state.goals.push(data.goal);
+        this.state.goals.push(data.goal || {name: 'New Goal', amount: data.goalAmount || 0});
+        break;
+      case 'emi':
+        // EMI affects liabilities/networth negatively
+        this.state.netWorth = Math.max(0, this.state.netWorth - data.loanAmount);
+        break;
+      case 'emergency':
+        // Emergency fund adds to networth/savings
+        this.state.netWorth += data.target || 0;
         break;
       case 'networth':
         this.state.netWorth = data.netWorth;
         break;
+      default:
+        // Default: add to projected wealth
+        this.state.projectedWealth += data.projected || data.target || data.totalCorpus || 0;
     }
-    this.state.activeCalculators = Object.keys(data).length;
+    
+    // Always increment active goals/calculators
+    this.state.activeCalculators += 1;
+    if (!this.state.goals.length) this.state.goals = [];
+    
     this.updateStats();
     this.saveToStorage();
     window.dispatchEvent(new CustomEvent('statsUpdate', { detail: this.state }));

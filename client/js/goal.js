@@ -479,6 +479,11 @@ function calculateSIP() {
     
     document.getElementById("sipResult").innerText = formatCurrency(sip);
     
+    // Dispatch to FinanceState
+    window.dispatchEvent(new CustomEvent('calculationComplete', { 
+      detail: { type: 'sip', monthlySIP: Math.round(sip), projected: target } 
+    }));
+    
     // Generate chart data
     updateSIPChart(sip, r, n, target);
     
@@ -657,6 +662,11 @@ function calculateEMI() {
         <div>Total Interest: <span>₹${totalInterest.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span></div>
         <div>Total Payment: <span>₹${totalPayment.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span></div>
     `;
+    
+    // Dispatch to FinanceState (EMI as liability affecting networth)
+    window.dispatchEvent(new CustomEvent('calculationComplete', { 
+      detail: { type: 'emi', loanAmount: P, emi: Math.round(emi), totalInterest } 
+    }));
     
     // Generate amortization chart
     updateAmortizationChart(P, r, n, emi);
