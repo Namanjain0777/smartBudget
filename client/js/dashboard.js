@@ -142,9 +142,9 @@ async function saveToServer() {
         const response = await fetch(SmartBudgetAPI.getApiUrl("/api/finance"), {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+},
 
             body: JSON.stringify({
                 income: state.income,
