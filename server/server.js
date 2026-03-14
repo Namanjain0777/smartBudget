@@ -11,7 +11,7 @@ const app = express();
 // Connect Database
 connectDB();
 
-// Allowed origins (frontend + local)
+// Allowed origins
 const allowedOrigins = [
   "http://localhost:5500",
   "http://localhost:3000",
@@ -21,16 +21,20 @@ const allowedOrigins = [
 // CORS configuration
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (mobile apps, Postman)
+
+    // allow requests with no origin (Postman, mobile apps)
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
-      return callback(new Error("CORS not allowed"));
+      console.log("Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
     }
+
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
@@ -40,7 +44,7 @@ app.options("*", cors());
 // JSON middleware
 app.use(express.json({ limit: "10mb" }));
 
-// Serve frontend if needed
+// Serve frontend (optional)
 app.use(express.static(path.join(__dirname, "../client")));
 
 // API Routes
@@ -48,7 +52,7 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/finance", require("./routes/financeRoutes"));
 app.use("/api/stock", require("./routes/stockRoutes"));
 
-// Health check route
+// Health route
 app.get("/", (req, res) => {
   res.send("SmartBudget API running 🚀");
 });
