@@ -480,9 +480,9 @@ function calculateSIP() {
     document.getElementById("sipResult").innerText = formatCurrency(sip);
     
     // Dispatch to FinanceState
-    window.dispatchEvent(new CustomEvent('calculationComplete', { 
-      detail: { type: 'sip', monthlySIP: Math.round(sip), projected: target } 
-    }));
+    if (window.finance) {
+        window.finance.handleCalculation({ type: 'sip', monthlySIP: Math.round(sip), projected: target });
+    }
     
     // Generate chart data
     updateSIPChart(sip, r, n, target);
