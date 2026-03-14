@@ -48,7 +48,7 @@ let healthChart;
 
 document.addEventListener("DOMContentLoaded", async () => {
     showLoading(true);
-    
+
     try {
         await initCharts();
         await fetchUserData();
@@ -81,33 +81,31 @@ async function fetchUserData() {
     const token = localStorage.getItem("token");
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-    
+
     try {
         const response = await fetch(SmartBudgetAPI.getApiUrl("/api/finance"), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": token
-            },
-            signal: controller.signal
+                "Authorization": `Bearer ${token}`
+            }
         });
-
+        const data = await response.json();
         clearTimeout(timeoutId);
         if (response.ok) {
-            const data = await response.json();
-            
+
             if (data) {
                 // Populate state from database
                 state.income = data.income || 0;
                 state.expense = data.expense || 0;
                 state.investments = data.investments || {};
                 state.liabilities = data.liabilities || {};
-                
+
                 // Initialize savings history if not present
                 if (!state.savingsHistory.length) {
                     state.savingsHistory = Array(6).fill(0);
                 }
-                
+
                 console.log("Data loaded from server:", state);
                 SmartBudgetAnimations.showToast("Welcome back! Your data is loaded.", "success");
             }
@@ -139,14 +137,15 @@ async function fetchUserData() {
 
 async function saveToServer() {
     const token = localStorage.getItem("token");
-    
+
     try {
         const response = await fetch(SmartBudgetAPI.getApiUrl("/api/finance"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": token
+                "Authorization": `Bearer ${token}`
             },
+
             body: JSON.stringify({
                 income: state.income,
                 expense: state.expense,
@@ -379,79 +378,79 @@ function selectLiabilityType(btn, type) {
 function addIncome() {
     const input = document.getElementById("incomeInput");
     const val = Number(input.value);
-    
+
     if (!val || val <= 0) {
         SmartBudgetAnimations.showToast("Please enter a valid amount", "warning");
         return;
     }
-    
+
     state.income += val;
     input.value = "";
-    
+
     // Animate the counter
     const totalIncomeEl = document.getElementById("totalIncome");
     SmartBudgetAnimations.animateCounter(totalIncomeEl, 0, state.income, 800, "₹", "");
-    
+
     renderDashboard();
     debouncedSave();
-    
+
     SmartBudgetAnimations.showToast("Income added successfully!", "success");
 }
 
 function addExpense() {
     const input = document.getElementById("expenseInput");
     const val = Number(input.value);
-    
+
     if (!val || val <= 0) {
         SmartBudgetAnimations.showToast("Please enter a valid amount", "warning");
         return;
     }
-    
+
     state.expense += val;
     state.expenseCategories[selectedExpenseType] += val;
     input.value = "";
-    
+
     renderDashboard();
     debouncedSave();
-    
+
     SmartBudgetAnimations.showToast("Expense added successfully!", "success");
 }
 
 function addInvestment() {
     const input = document.getElementById("investmentAmount");
     const val = Number(input.value);
-    
+
     if (!val || val <= 0) {
         SmartBudgetAnimations.showToast("Please enter a valid amount", "warning");
         return;
     }
-    
-    state.investments[selectedInvestmentType] = 
+
+    state.investments[selectedInvestmentType] =
         (state.investments[selectedInvestmentType] || 0) + val;
     input.value = "";
-    
+
     renderDashboard();
     debouncedSave();
-    
+
     SmartBudgetAnimations.showToast("Investment added successfully!", "success");
 }
 
 function addLiability() {
     const input = document.getElementById("liabilityAmount");
     const val = Number(input.value);
-    
+
     if (!val || val <= 0) {
         SmartBudgetAnimations.showToast("Please enter a valid amount", "warning");
         return;
     }
-    
-    state.liabilities[selectedLiabilityType] = 
+
+    state.liabilities[selectedLiabilityType] =
         (state.liabilities[selectedLiabilityType] || 0) + val;
     input.value = "";
-    
+
     renderDashboard();
     debouncedSave();
-    
+
     SmartBudgetAnimations.showToast("Liability added successfully!", "success");
 }
 
@@ -499,9 +498,9 @@ function calculate() {
     const debtTypes = ['FD', 'Bonds', 'PPF'];
     const goldTypes = ['Gold'];
     const cashTypes = ['Cash'];
-    
+
     let equity = 0, debt = 0, gold = 0, cash = 0;
-    
+
     Object.entries(state.investments).forEach(([type, amount]) => {
         if (equityTypes.includes(type)) equity += amount;
         else if (debtTypes.includes(type)) debt += amount;
@@ -542,7 +541,7 @@ function calculate() {
 
 function generateAIRecommendation(data) {
     const recommendations = [];
-    
+
     // Savings rate analysis
     if (data.savingsRate < 10) {
         recommendations.push("⚠️ Your savings rate is critically low (<10%). Try to reduce discretionary expenses and increase income.");
@@ -574,11 +573,11 @@ function generateAIRecommendation(data) {
     // 50/30/20 rule
     const expenseBreakdown = state.expenseCategories;
     const totalExpense = state.expense;
-    
+
     if (totalExpense > 0) {
         const needRatio = (expenseBreakdown.Need / totalExpense) * 100;
         const wantRatio = (expenseBreakdown.Want / totalExpense) * 100;
-        
+
         if (needRatio > 60) {
             recommendations.push("💡 Your 'Needs' expenses are high. Look for ways to reduce housing or utility costs.");
         }
@@ -591,12 +590,12 @@ function generateAIRecommendation(data) {
 
     // Display first 2-3 recommendations
     const displayRecommendations = recommendations.slice(0, 3);
-    
+
     const container = document.getElementById("aiRecommendation");
-    container.innerHTML = displayRecommendations.map(rec => 
+    container.innerHTML = displayRecommendations.map(rec =>
         `<p style="margin-bottom: 12px;">${rec}</p>`
     ).join('');
-    
+
     container.style.borderLeft = "3px solid var(--accent-purple)";
     container.style.paddingLeft = "16px";
 }
@@ -670,7 +669,7 @@ function renderDashboard() {
     const fundProgress = document.getElementById("fundProgress");
     if (fundProgress) {
         fundProgress.style.width = `${data.emergencyFundProgress}%`;
-        
+
         // Change color based on progress
         if (data.emergencyFundProgress >= 100) {
             fundProgress.style.background = "var(--gradient-success)";
@@ -725,7 +724,7 @@ function updateCharts(data) {
     if (investmentChart) {
         const investmentTypes = ["Stocks", "Mutual Funds", "FD", "Gold", "Real Estate", "Crypto", "PPF", "Cash"];
         const investmentData = investmentTypes.map(type => state.investments[type] || 0);
-        
+
         investmentChart.data.datasets[0].data = investmentData;
         investmentChart.update();
     }
@@ -735,7 +734,7 @@ function updateCharts(data) {
         // Shift array and add current savings
         state.savingsHistory.shift();
         state.savingsHistory.push(data.savings);
-        
+
         savingsTrendChart.data.datasets[0].data = state.savingsHistory;
         savingsTrendChart.update();
     }
