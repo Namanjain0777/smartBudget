@@ -1,6 +1,5 @@
 # 🚀 SmartBudget - AI-Powered Personal Finance Platform
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-v18-green)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248)](https://mongodb.com)
 
@@ -86,14 +85,6 @@ PORT=5000
 2. `git checkout -b feature/xyz`
 3. Commit changes
 4. Push & PR
-
-## 📄 License
-MIT License - Free to use/modify/share.
-
-## 👨‍💻 Author
-Built with ❤️ by AI Engineer using BLACKBOXAI
-
-**Ready for production, interviews, WhatsApp sharing! 🎉**
 
 ---
 *Star if useful! Questions? Open issue.*
