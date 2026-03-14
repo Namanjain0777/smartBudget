@@ -27,7 +27,7 @@ const state = {
         Want: 0,
         Necessary: 0
     },
-    savingsHistory: [], // For savings trend chart
+    savingsHistory: [0, 0, 0, 0, 0, 0],
     isLoading: true
 };
 
@@ -50,8 +50,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     showLoading(true);
 
     try {
-        await initCharts();
         await fetchUserData();
+        await initCharts();
         renderDashboard();
     } catch (error) {
         console.error("Initialization error:", error);
@@ -85,11 +85,13 @@ async function fetchUserData() {
     try {
         const response = await fetch(SmartBudgetAPI.getApiUrl("/api/finance"), {
             method: "GET",
+            signal: controller.signal,
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             }
         });
+
         const data = await response.json();
         clearTimeout(timeoutId);
         if (response.ok) {
@@ -107,7 +109,9 @@ async function fetchUserData() {
                 }
 
                 console.log("Data loaded from server:", state);
-                SmartBudgetAnimations.showToast("Welcome back! Your data is loaded.", "success");
+                if (state.income || state.expense) {
+                    SmartBudgetAnimations.showToast("Welcome back! Your data is loaded.", "success");
+                }
             }
         } else if (response.status === 404) {
             // No data yet - this is fine for new users
@@ -129,6 +133,7 @@ async function fetchUserData() {
         }
         // Continue offline
     }
+
 }
 
 // =====================================================
@@ -142,9 +147,9 @@ async function saveToServer() {
         const response = await fetch(SmartBudgetAPI.getApiUrl("/api/finance"), {
             method: "POST",
             headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`
-},
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
 
             body: JSON.stringify({
                 income: state.income,
@@ -730,14 +735,11 @@ function updateCharts(data) {
     }
 
     // Savings trend chart - add current savings to history
-    if (savingsTrendChart && state.income > 0) {
-        // Shift array and add current savings
-        state.savingsHistory.shift();
-        state.savingsHistory.push(data.savings);
-
+    if (savingsTrendChart) {
         savingsTrendChart.data.datasets[0].data = state.savingsHistory;
         savingsTrendChart.update();
     }
+
 
     // Health chart
     if (healthChart) {
